@@ -203,7 +203,7 @@ window.onload = function() {
   setInterval(syncQuotes, 30000);
 };
 
-// CSS for notification (add this to your CSS file or inside a <style> tag in your HTML file)
+// CSS for notification 
 const style = document.createElement('style');
 style.innerHTML = `
   .notification {
