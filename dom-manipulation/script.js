@@ -169,7 +169,18 @@ async function syncQuotes() {
   quotes.push(...serverQuotes);
   saveQuotes();
   populateCategories();
-  alert('Quotes synced with server successfully!');
+  showNotification('Quotes synced with server!');
+}
+
+// Function to show notifications
+function showNotification(message) {
+  const notification = document.createElement('div');
+  notification.textContent = message;
+  notification.className = 'notification';
+  document.body.appendChild(notification);
+  setTimeout(() => {
+    document.body.removeChild(notification);
+  }, 3000);
 }
 
 // Add event listener to the "Show New Quote" button
@@ -191,3 +202,21 @@ window.onload = function() {
   // Periodically sync with server every 30 seconds
   setInterval(syncQuotes, 30000);
 };
+
+// CSS for notification (add this to your CSS file or inside a <style> tag in your HTML file)
+const style = document.createElement('style');
+style.innerHTML = `
+  .notification {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4caf50;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+`;
+document.head.appendChild(style);
