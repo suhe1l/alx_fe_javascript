@@ -1,8 +1,8 @@
 // Initialize an array to store quotes
 let quotes = JSON.parse(localStorage.getItem('quotes')) || [
-  { text: "The greatest glory in living lies not in never falling, but in rising every time we fall.", category: "Inspirational" },
-  { text: "The way to get started is to quit talking and begin doing.", category: "Motivational" },
-  { text: "Your time is limited, so don't waste it living someone else's life.", category: "Life" }
+  { id: 1, text: "The greatest glory in living lies not in never falling, but in rising every time we fall.", category: "Inspirational" },
+  { id: 2, text: "The way to get started is to quit talking and begin doing.", category: "Motivational" },
+  { id: 3, text: "Your time is limited, so don't waste it living someone else's life.", category: "Life" }
 ];
 
 // Function to save quotes to local storage
@@ -27,11 +27,13 @@ function addQuote() {
   const newQuoteCategory = document.getElementById('newQuoteCategory').value;
 
   if (newQuoteText && newQuoteCategory) {
-    quotes.push({ text: newQuoteText, category: newQuoteCategory });
+    const newQuote = { id: Date.now(), text: newQuoteText, category: newQuoteCategory };
+    quotes.push(newQuote);
     document.getElementById('newQuoteText').value = '';
     document.getElementById('newQuoteCategory').value = '';
     saveQuotes();
     populateCategories();
+    syncWithServer();
     alert('Quote added successfully!');
   } else {
     alert('Please enter both the quote and the category.');
@@ -83,6 +85,7 @@ function importFromJsonFile(event) {
     quotes.push(...importedQuotes);
     saveQuotes();
     populateCategories();
+    syncWithServer();
     alert('Quotes imported successfully!');
   };
   fileReader.readAsText(event.target.files[0]);
@@ -124,6 +127,24 @@ function filterQuotes() {
   showRandomQuote();
 }
 
+// Function to sync local quotes with the server
+async function syncWithServer() {
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+    const serverQuotes = await response.json();
+
+    // Simulate syncing by taking server data as precedence
+    const serverQuoteIds = serverQuotes.map(quote => quote.id);
+    quotes = quotes.filter(quote => !serverQuoteIds.includes(quote.id));
+    quotes.push(...serverQuotes);
+    saveQuotes();
+    populateCategories();
+    alert('Quotes synced with server successfully!');
+  } catch (error) {
+    console.error('Error syncing with server:', error);
+  }
+}
+
 // Add event listener to the "Show New Quote" button
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);
 
@@ -140,4 +161,6 @@ window.onload = function() {
     const quoteDisplay = document.getElementById('quoteDisplay');
     quoteDisplay.innerHTML = `<p>${lastViewedQuote.text}</p><p><em>${lastViewedQuote.category}</em></p>`;
   }
+  // Periodically sync with server every 30 seconds
+  setInterval(syncWithServer, 30000);
 };
