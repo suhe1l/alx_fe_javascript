@@ -127,22 +127,33 @@ function filterQuotes() {
   showRandomQuote();
 }
 
-// Function to sync local quotes with the server
-async function syncWithServer() {
+// Function to fetch quotes from the server
+async function fetchQuotesFromServer() {
   try {
     const response = await fetch('https://jsonplaceholder.typicode.com/posts');
     const serverQuotes = await response.json();
-
-    // Simulate syncing by taking server data as precedence
-    const serverQuoteIds = serverQuotes.map(quote => quote.id);
-    quotes = quotes.filter(quote => !serverQuoteIds.includes(quote.id));
-    quotes.push(...serverQuotes);
-    saveQuotes();
-    populateCategories();
-    alert('Quotes synced with server successfully!');
+    return serverQuotes.map(quote => ({
+      id: quote.id,
+      text: quote.title,
+      category: 'Server'  // Placeholder category, you can adjust based on actual data
+    }));
   } catch (error) {
-    console.error('Error syncing with server:', error);
+    console.error('Error fetching quotes from server:', error);
+    return [];
   }
+}
+
+// Function to sync local quotes with the server
+async function syncWithServer() {
+  const serverQuotes = await fetchQuotesFromServer();
+  
+  // Simulate syncing by taking server data as precedence
+  const serverQuoteIds = serverQuotes.map(quote => quote.id);
+  quotes = quotes.filter(quote => !serverQuoteIds.includes(quote.id));
+  quotes.push(...serverQuotes);
+  saveQuotes();
+  populateCategories();
+  alert('Quotes synced with server successfully!');
 }
 
 // Add event listener to the "Show New Quote" button
