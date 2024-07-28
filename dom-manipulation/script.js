@@ -85,7 +85,7 @@ function importFromJsonFile(event) {
     quotes.push(...importedQuotes);
     saveQuotes();
     populateCategories();
-    syncWithServer();
+    syncQuotes();
     alert('Quotes imported successfully!');
   };
   fileReader.readAsText(event.target.files[0]);
@@ -159,8 +159,8 @@ async function postQuoteToServer(quote) {
   }
 }
 
-// Function to sync local quotes with the server
-async function syncWithServer() {
+// Function to sync quotes with the server
+async function syncQuotes() {
   const serverQuotes = await fetchQuotesFromServer();
   
   // Simulate syncing by taking server data as precedence
@@ -189,5 +189,5 @@ window.onload = function() {
     quoteDisplay.innerHTML = `<p>${lastViewedQuote.text}</p><p><em>${lastViewedQuote.category}</em></p>`;
   }
   // Periodically sync with server every 30 seconds
-  setInterval(syncWithServer, 30000);
+  setInterval(syncQuotes, 30000);
 };
